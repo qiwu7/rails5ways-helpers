@@ -1,2 +1,10 @@
 // Custom bootstrap variables must be set or imported *before* bootstrap.
 @import "bootstrap";
+
+.example {
+  margin: 20px 20px;
+}
+
+.subsection {
+  padding-top: 10px;
+}
