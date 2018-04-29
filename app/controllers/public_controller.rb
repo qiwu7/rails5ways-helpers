@@ -6,4 +6,8 @@ class PublicController < ApplicationController
   def date
     render 'public/date'
   end
+
+  def form
+    render 'public/form'
+  end
 end

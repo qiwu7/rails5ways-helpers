@@ -3,4 +3,5 @@ Rails.application.routes.draw do
   root to: 'public#index'
   get 'index', to: 'public#index'
   get 'date', to: 'public#date'
+  get 'form', to: 'public#form'
 end

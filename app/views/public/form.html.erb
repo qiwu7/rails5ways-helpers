@@ -1,0 +1,351 @@
+<section>
+  <div class="container">
+    <div>
+      <h1>Form Helper</h1>
+      <%= form_for :user do |f| %>
+        <div class="field">
+          First name: <%= f.text_field :first_name %>
+        </div>
+        <div class="field">
+          Last name: <%= f.text_field :last_name %>
+        </div>
+        <div class="field">
+          Bio: <%= f.text_area :bio %>
+        </div>
+        <div class="field">
+          Admin? <%= f.check_box :admin %>
+        </div>
+        <div class="actions">
+          <%= f.submit %>
+        </div>
+      <% end %>
+
+      <div class="subsection">
+        <h3>Form Inputs</h3>
+        <p>
+          For each of these methods, there is a similarly named form builder method
+          that omits the object_name parameter, referencing instead the object that was
+          passed in to form_for or fields_for.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!-------------------------------------------------- button ------------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <h4><code><strong>button(value = nil, options = {}, &block)</strong></code></h4>
+        <p>
+          Adds a button to a form.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "form_for :post do |f|; f.button('create post'); end",
+          "form_for :post do |f|; f.button do; content_tag(:strong, 'Ask me!'); end; end"
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!------------------------------------------------ check_box ------------------------------------------------>
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>
+          check_box(object_name, method, options = {}, checked_value = "1", unchecked_value = "0")
+        </strong></code></h4>
+        <p>
+          Returns a checkbox tag tailored for accessing a specified attribute (identified
+          by method) on an object encapsulated in the form builder or identified by the
+          optional object_name. The model attribute should return an <strong>integer</storng>; if that
+          integer is above zero, then the checkbox is checked. Additional options on
+          the input tag can be passed in as options. The checked_value defaults to 1 while
+          the default unchecked_value is set to 0, which will naturally typecast to boolean
+          values.
+        </p>
+        <p>
+          Note that this helper generates an extra hidden input field to ensure that a
+          false value is passed even if the check box is unchecked. Ordinarily, if it was
+          unchecked it would simply be missing from the request parameters.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "check_box('timesheet', 'approved') + ' Approved'",
+        ]%>
+        <p>
+          This way, the client either sends only the hidden field (representing the
+          check box is unchecked), or both fields. Since the HTML specification says
+          key/value pairs have to be sent in the same order they appear in the form,
+          and parameters extraction gets the last occurrence of any repeated key in the
+          query string, this little hack works for ordinary forms.
+        </p>
+        <p>
+          Unfortunately the hack fails for check boxes within array-like nested form
+          fields, as in the following example.
+        </p>
+        <code style="display:block;white-space:pre-wrap">
+          = fields_for "project[invoice_attributes][]", invoice, index: nil do |form|
+            = form.check_box :paid
+        </code>
+        <p>
+          In this situation, for each item with a checked check box you will end up with
+          an extra ghost item for that attribute, assigned to “0”. A potential workaround
+          is to lose some of the magic by working with check_box_tag.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- color_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>color_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style color input field that enables setting of a color via
+          hex values (as a string). The default value of a color_field is set to "#000000"
+          if the underlying attribute is nil.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "color_field(:car, :paint_color)",
+          "color_field(:car, :paint_color, value: '#FFFFFF')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- date_field ------------------------------------------------>
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>date_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style date input field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "date_field(:user, :birthday)",
+          "date_field(:user, :birthday, value: '1984-05-12')",
+          "date_field(:user, :birthday, max: Date.today)",
+          "date_field(:user, :birthday, min: '1900-05-20')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!---------------------------------------------- datetime_field --------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>datetime_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style datetype input field that accepts time entry in UTC.
+          If a DateTime or ActiveSupport::TimeWithZone instance is provided to the helper
+          by the underlying attribute, it calls strftime with “%Y-%m-%dT%T.%L%z” on
+          the value to attempt setting a default value.
+        </p>
+        <p>
+          To override the default value, pass a string in the format “%Y-%m-%dT%T.%L%z”
+          to the option :value. This method is otherwise identical to date_field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "datetime_field(:user, :birthday, value: '2000-01-01T12:03:59')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!------------------------------------------ datetime_local_field ------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>datetime_local_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style datetime-local input field. This method is otherwise
+          identical to datetime_field, except that the value used is local over UTC.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- email_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>email_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style email input field. This method is otherwise identical
+          to text_field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "email_field(:user, :email)",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!------------------------------------------------ file_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>file_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates a file upload field and automatically adds multipart: true to the
+          enclosing form. See file_field_tag for more details.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "file_field(:user, :file)",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- hidden_field ---------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>hidden_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates a hidden field, with parameters and options similar to text_field.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!-------------------------------------------------- label -------------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>label(object_name, method, content_or_options = nil, options = nil, &block)</strong></code></h4>
+        <p>
+          Creates a label tag with the for attribute pointed at the specified input field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "label('timesheet', 'approved')",
+          "label('timesheet', 'approved', 'Approved?')",
+        ]%>
+        <p>
+          Many of us like to link labels to input fields by nesting. (Many would say that’s
+          the correct usage of labels.) As of Rails 3 the label helper accepts a block so
+          that nesting is possible and works as would be expected.
+        </p>
+        <code style="display:block;white-space:pre-wrap">
+          = f.label :terms do
+            = f.check_box :accept_terms
+            %span Accept #{link_to "Terms", terms_path}
+        </code>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- month_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>month_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style month input field. A month value is represented
+          by four digits for the year, followed by a dash, and ending with two digits
+          representing the month (ex.2013-08).
+        </p>
+        <p>
+          If a DateTime or ActiveSupport::TimeWithZone instance is provided to the helper,
+          it calls strftime with “%Y-%m” on the object’s value to attempt setting a default
+          value.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "month_field(:user, :born_on)",
+          "month_field(:user, :born_on, value: '2000-01')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- number_field ---------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>number_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style number input field. This method is otherwise identical
+          to text_field with the following additional options:
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "number_field(:user, :late_minutes)",
+          "number_field(:user, :late_minutes, min: 0)",
+          "number_field(:user, :late_minutes, max: 10)",
+          "number_field(:user, :late_minutes, max: 10, step: 2)",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- password_field -------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>password_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates a traditional password input field. This method is otherwise identical
+          to text_field but renders empty by default for security reasons. If you want to
+          pre-populate the user’s password you can do something like
+        </p>
+        <code>
+          password_field(:user, :password, value: user.password)
+        </code>
+        <p>You should never have a reason to pre-populate a password field with a
+          password, because you should never store a user password in plaintext.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- radio_button ---------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>radio_button(object_name, method, tag_value, options = {})</strong></code></h4>
+        <p>
+          Creates a traditional HTML radio button input field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "radio_button(:post, :category, 'rails') + ' rails'",
+          "radio_button(:post, :category, 'ruby') + ' ruby'",
+        ]%>
+
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- range_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>range_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style range input field. This method is otherwise identical
+          to number_field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "range_field(:user, :age, in: 1..100)",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- search_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>search_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style search input field. This method is otherwise identical
+          to text_field.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- telephone_field ------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>telephone_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style telephone input field. This method is otherwise
+          identical to text_field and is aliased as phone_field.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- text_area ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>text_area(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates a traditional HTML multiline text input field (the textarea tag). The
+          :size option lets you easily specify the dimensions of the text area, instead of
+          having to resort to explicit :rows and :cols options.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "text_area(:comment, :body, size: '25x10')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- text_field ------------------------------------------------>
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>text_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates a standard HTML text input field.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- time_field ----------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>time_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style input field of type “time”. If a DateTime or ActiveSupport::
+          TimeWithZone instance is provided to the helper, it calls strftime with
+          “%T.%L” on the object’s value to attempt setting a default value.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "time_field(:task, :started_at, value: '13:59:00')",
+        ]%>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- url_field ------------------------------------------------->
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>url_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style input field of type “url”. This method is otherwise
+          identical to text_field.
+        </p>
+        <!----------------------------------------------------------------------------------------------------------->
+        <!----------------------------------------------- week_field ------------------------------------------------>
+        <!----------------------------------------------------------------------------------------------------------->
+        <br>
+        <h4><code><strong>week_field(object_name, method, options = {})</strong></code></h4>
+        <p>
+          Creates an HTML5-style input field of type “week”. If a DateTime or ActiveSupport::
+          TimeWithZone instance is provided to the helper, it calls strftime with “%YW%
+          W” on the object’s value to attempt setting a default value.
+        </p>
+        <p>
+          To override the default value, pass a string in the format “%Y-W%W” to the
+          option :value. This method is otherwise identical to datetime_field.
+        </p>
+        <%= render 'shared/example_card', examples: [
+          "week_field(:task, :started_at, value: '2018-W23')",
+        ]%>
+      </div>
+    </div>
+    <div><%= link_to "back", index_path, class: "btn btn-primary" %></div>
+  </div>
+</section>
